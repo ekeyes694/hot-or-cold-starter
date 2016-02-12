@@ -15,6 +15,14 @@ $(document).ready(function () {
         return secretNumber;
     }
 
+    function guessCounter(counter) {
+        $('#count').text(counter);
+    }
+
+    function guessHistory(guessedNumber) {
+        $('#guessList').append('<li>' + guessedNumber + '</li>');
+    }
+
     function validation(guessedNumber) {
         console.log('Guessed Number: ' + guessedNumber);
         if (isNaN(guessedNumber)) {
@@ -23,12 +31,12 @@ $(document).ready(function () {
             return false;
         } else if (guessedNumber < 1 || guessedNumber > 100) {
             alert('You must enter a number between 1 and 100!');
-            $('userGuess').val('');
+            $('#userGuess').val('');
             return false;
         } else {
             guessFeedback(secretNumber, guessedNumber);
             counter--;
-            guessHistory();
+            guessHistory(guessedNumber);
             guessCounter(counter);
             $('#userGuess').val('');
 
@@ -59,7 +67,21 @@ $(document).ready(function () {
             $('#feedback').text('Very HOT!');
             $('#userGuess').val('');
         } else {
-            $('#feedback').text("You WON!");
+            $('#feedback').text("You guessed the number! You WON!");
+            document.getElementById("userGuess").disabled = true;
+            document.getElementById("guessButton").disabled = true;
+        }
+    }
+
+    function relativeFeedback(secretNumber, oldGuess, newGuess) {
+        var oldDiff = Math.abs(parseInt(secretNumber) - parseInt(oldGuess));
+        var newDiff = Math.abs(parseInt(secretNumber) - parseInt(newGuess));
+        if (newDiff > oldDiff) {
+            $('#relative-feedback').text('You are colder than the last guess!');
+        } else if (newDiff === oldDiff) {
+            $('#relative-feedback').text('You are as far as your previous guess!');
+        } else {
+            $('#relative-feedback').text('You are hotter than the last guess!');
         }
     }
     $('#guessButton').on('click', function () {
@@ -72,7 +94,7 @@ $(document).ready(function () {
         oldGuess = newGuess;
     });
 
-    $('#userGuess').on('keypress', function (e) {
+    $(document).on('keypress', function (e) {
         if (e.which === 13) {
             var guessedNumber = $('#userGuess').val();
             var newGuess = guessedNumber;
@@ -84,13 +106,7 @@ $(document).ready(function () {
         }
     });
 
-    function guessCounter(counter) {
-        $('#count').text(counter);
-    }
 
-    function guessHistory() {
-        $('#guessList').append('<li>' + parseInt($('#userGuess').val(), 10) + '</li>');
-    }
     /*--- Display information modal box ---*/
     $(".what").click(function () {
         $(".overlay").fadeIn(1000);
